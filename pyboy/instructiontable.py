@@ -1,3 +1,6 @@
+from typing import Dict
+from typing import List
+
 from pyboy.instruction import Argument as Arg
 from pyboy.instruction import ArgumentType as ArgType
 from pyboy.instruction import Instruction, FlagAction
@@ -49,15 +52,15 @@ class InstructionTable(object):
         self._flag_c = Arg(ArgType.FLAG_SET, flag="c")
         self._flag_nc = Arg(ArgType.FLAG_NOT_SET, flag="c")
 
-        self.tables = {}
+        self.tables = {}  # type: Dict[str, List[Instruction]]
         self.create_tables()
 
-    def create_tables(self):
+    def create_tables(self) -> None:
         """Initialize the different tables"""
         self.create_default_instruction_table()
         self.create_prefix_cb_instruction_table()
 
-    def create_default_instruction_table(self):
+    def create_default_instruction_table(self) -> None:
         """Initialize the default table"""
         table = [Instruction(0x00, "NOP", [], 4) for _ in range(0xFF)]
         flags = dict.fromkeys("z n h c".split(" "), FlagAction.NOT_AFFECTED)
@@ -421,7 +424,7 @@ class InstructionTable(object):
 
         self.tables['default'] = table
 
-    def create_prefix_cb_instruction_table(self):
+    def create_prefix_cb_instruction_table(self) -> None:
         """Initialize "PREFIX CB" instruction table"""
         table = [Instruction(0x00, "NOP", [], 4)]
 
