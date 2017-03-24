@@ -1,3 +1,5 @@
+from typing import List
+
 from pyboy.instruction import Instruction, FlagAction
 from pyboy.instruction import ArgumentType as ArgType
 from pyboy.instruction import Argument as Arg
@@ -14,7 +16,7 @@ class CPU(object):
         ]
         self.registers = dict.fromkeys(registers_names)
         self.registers['PC'] = 0x100
-        self.instructions = []
+        self.instructions = []  # type: List[Instruction]
 
         self.stopped = False
         self.halted = False
@@ -27,9 +29,9 @@ class CPU(object):
 
     def create_instructions_table(self):
         a8 = Arg(ArgType.ADDRESS_8)
-        a12 = Arg(ArgType.ADDRESS_16)
+        a16 = Arg(ArgType.ADDRESS_16)
         a8_deref = Arg(ArgType.ADDRESS_8, dereference=True)
-        a12_deref = Arg(ArgType.ADDRESS_16, dereference=True)
+        a16_deref = Arg(ArgType.ADDRESS_16, dereference=True)
 
         d8 = Arg(ArgType.UNSIGNED_8)
         d12 = Arg(ArgType.UNSIGNED_16)
@@ -72,7 +74,7 @@ class CPU(object):
 
         flag_z = Arg(ArgType.FLAG_SET, flag="z")
         flag_nz = Arg(ArgType.FLAG_NOT_SET, flag="z")
-        flac_c = Arg(ArgType.FLAG_SET, flag="c")
+        flag_c = Arg(ArgType.FLAG_SET, flag="c")
         flag_nc = Arg(ArgType.FLAG_NOT_SET, flag="c")
 
         # 8 bits loads
@@ -146,7 +148,7 @@ class CPU(object):
         self.instructions.append(Instruction(0x0A, "LD", [a, bc_deref], 8))
         self.instructions.append(Instruction(0x1A, "LD", [a, de_deref], 8))
         self.instructions.append(Instruction(0x7E, "LD", [a, hl_deref], 8))
-        self.instructions.append(Instruction(0x7A, "LD", [a, a12_deref], 16))
+        self.instructions.append(Instruction(0x7A, "LD", [a, a16_deref], 16))
         self.instructions.append(Instruction(0x3E, "LD", [a, d8], 8))
 
         # Loads from register A
@@ -159,7 +161,7 @@ class CPU(object):
         self.instructions.append(Instruction(0x02, "LD", [bc_deref, a], 8))
         self.instructions.append(Instruction(0x12, "LD", [de_deref, a], 8))
         self.instructions.append(Instruction(0x77, "LD", [bc_deref, a], 8))
-        self.instructions.append(Instruction(0xEA, "LD", [a12_deref, a], 16))
+        self.instructions.append(Instruction(0xEA, "LD", [a16_deref, a], 16))
 
         # Misc Loads
         self.instructions.append(Instruction(0x7F, "LD", [a, a], 4))
@@ -186,7 +188,7 @@ class CPU(object):
             'z': FlagAction.RESET, 'n': FlagAction.RESET,
             'h': FlagAction.AFFECTED, 'c': FlagAction.AFFECTED
         }))
-        self.instructions.append(Instruction(0x08, "LD", [a12_deref, sp], 20))
+        self.instructions.append(Instruction(0x08, "LD", [a16_deref, sp], 20))
 
         # Push
         self.instructions.append(Instruction(0xC1, "PUSH", [bc], 12))
@@ -347,6 +349,19 @@ class CPU(object):
         self.instructions.append(Instruction(0x1B, "DEC", [de], 8))
         self.instructions.append(Instruction(0x2B, "DEC", [hl], 8))
         self.instructions.append(Instruction(0x3B, "DEC", [sp], 8))
+
+        # Jumps
+        self.instructions.append(Instruction(0xC3, "JP", [a16], 12))
+        self.instructions.append(Instruction(0xC2, "JP", [flag_nz, a16], 12))
+        self.instructions.append(Instruction(0xCA, "JP", [flag_z, a16], 12))
+        self.instructions.append(Instruction(0xD2, "JP", [flag_nc, a16], 12))
+        self.instructions.append(Instruction(0xDA, "JP", [flag_c, a16], 12))
+        self.instructions.append(Instruction(0xE9, "JP", [hl_deref], 4))
+        self.instructions.append(Instruction(0x18, "JR", [r8], 8))
+        self.instructions.append(Instruction(0x20, "JR", [flag_nz, r8], 8))
+        self.instructions.append(Instruction(0x28, "JR", [flag_z, r8], 8))
+        self.instructions.append(Instruction(0x30, "JR", [flag_nc, r8], 8))
+        self.instructions.append(Instruction(0x38, "JR", [flag_c, r8], 8))
 
     def run_load(self, instruction):
         pass
