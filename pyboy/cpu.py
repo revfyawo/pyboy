@@ -20,7 +20,7 @@ class CPU(object):
         self.interrupts_enabled = True
         self.prefixed = False
 
-    def exec(self, opcode: int):
+    def exec(self, opcode: int) -> None:
         if self.prefixed:
             instruction = self.instructions.tables['PREFIX CB'][opcode]
             asm = instruction.asm
@@ -76,68 +76,68 @@ class CPU(object):
         else:
             self.exec_misc(instruction)
 
-    def exec_load(self, instruction):
+    def exec_load(self, instruction: Instruction) -> None:
         pass
 
-    def exec_push(self, instruction):
+    def exec_push(self, instruction: Instruction) -> None:
         pass
 
-    def exec_pop(self, instruction):
+    def exec_pop(self, instruction: Instruction) -> None:
         pass
 
-    def exec_add(self, instruction):
+    def exec_add(self, instruction: Instruction) -> None:
         pass
 
-    def exec_sub(self, instruction):
+    def exec_sub(self, instruction: Instruction) -> None:
         pass
 
-    def exec_and(self, instruction):
+    def exec_and(self, instruction: Instruction) -> None:
         pass
 
-    def exec_or(self, instruction):
+    def exec_or(self, instruction: Instruction) -> None:
         pass
 
-    def exec_xor(self, instruction):
+    def exec_xor(self, instruction: Instruction) -> None:
         pass
 
-    def exec_cp(self, instruction):
+    def exec_cp(self, instruction: Instruction) -> None:
         pass
 
-    def exec_inc(self, instruction):
+    def exec_inc(self, instruction: Instruction) -> None:
         pass
 
-    def exec_dec(self, instruction):
+    def exec_dec(self, instruction: Instruction) -> None:
         pass
 
-    def exec_jp(self, instruction):
+    def exec_jp(self, instruction: Instruction) -> None:
         pass
 
-    def exec_call(self, instruction):
+    def exec_call(self, instruction: Instruction) -> None:
         pass
 
-    def exec_ret(self, instruction):
+    def exec_ret(self, instruction: Instruction) -> None:
         pass
 
-    def exec_rst(self, instruction):
+    def exec_rst(self, instruction: Instruction) -> None:
         pass
 
-    def exec_shiftr(self, instruction):
+    def exec_shiftr(self, instruction: Instruction) -> None:
         pass
 
-    def exec_shiftl(self, instruction):
+    def exec_shiftl(self, instruction: Instruction) -> None:
         pass
 
-    def exec_swap(self, instruction):
+    def exec_swap(self, instruction: Instruction) -> None:
         pass
 
-    def exec_bit(self, instruction):
+    def exec_bit(self, instruction: Instruction) -> None:
         pass
 
-    def exec_res(self, instruction):
+    def exec_res(self, instruction: Instruction) -> None:
         pass
 
-    def exec_set(self, instruction):
+    def exec_set(self, instruction: Instruction) -> None:
         pass
 
-    def exec_misc(self, instruction):
+    def exec_misc(self, instruction: Instruction) -> None:
         pass
