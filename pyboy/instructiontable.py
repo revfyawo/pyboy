@@ -372,14 +372,14 @@ class InstructionTable(object):
         table[0xDC] = Instruction(0xDC, "CALL", [self.flag_c, self.a16], 12)
 
         # Restarts
-        table[0xC7] = Instruction(0xC7, "REST 00H", [], 16)
-        table[0xCF] = Instruction(0xCF, "REST 08H", [], 16)
-        table[0xD7] = Instruction(0xD7, "REST 10H", [], 16)
-        table[0xDF] = Instruction(0xDF, "REST 18H", [], 16)
-        table[0xE7] = Instruction(0xE7, "REST 20H", [], 16)
-        table[0xEF] = Instruction(0xEF, "REST 28H", [], 16)
-        table[0xF7] = Instruction(0xF7, "REST 30H", [], 16)
-        table[0xFF] = Instruction(0xFF, "REST 38H", [], 16)
+        table[0xC7] = Instruction(0xC7, "RST 00H", [], 16)
+        table[0xCF] = Instruction(0xCF, "RST 08H", [], 16)
+        table[0xD7] = Instruction(0xD7, "RST 10H", [], 16)
+        table[0xDF] = Instruction(0xDF, "RST 18H", [], 16)
+        table[0xE7] = Instruction(0xE7, "RST 20H", [], 16)
+        table[0xEF] = Instruction(0xEF, "RST 28H", [], 16)
+        table[0xF7] = Instruction(0xF7, "RST 30H", [], 16)
+        table[0xFF] = Instruction(0xFF, "RST 38H", [], 16)
 
         # Returns
         table[0xC9] = Instruction(0xC9, "RET", [], 8)
