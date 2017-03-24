@@ -363,5 +363,61 @@ class CPU(object):
         self.instructions.append(Instruction(0x30, "JR", [flag_nc, r8], 8))
         self.instructions.append(Instruction(0x38, "JR", [flag_c, r8], 8))
 
+        # Calls
+        self.instructions.append(Instruction(0xCD, "CALL", [a16], 12))
+        self.instructions.append(Instruction(0xC4, "CALL", [flag_nz, a16], 12))
+        self.instructions.append(Instruction(0xCC, "CALL", [flag_z, a16], 12))
+        self.instructions.append(Instruction(0xD4, "CALL", [flag_nc, a16], 12))
+        self.instructions.append(Instruction(0xDC, "CALL", [flag_c, a16], 12))
+
+        # Restarts
+        self.instructions.append(Instruction(0xC7, "REST 00H", [], 16))
+        self.instructions.append(Instruction(0xCF, "REST 08H", [], 16))
+        self.instructions.append(Instruction(0xD7, "REST 10H", [], 16))
+        self.instructions.append(Instruction(0xDF, "REST 18H", [], 16))
+        self.instructions.append(Instruction(0xE7, "REST 20H", [], 16))
+        self.instructions.append(Instruction(0xEF, "REST 28H", [], 16))
+        self.instructions.append(Instruction(0xF7, "REST 30H", [], 16))
+        self.instructions.append(Instruction(0xFF, "REST 38H", [], 16))
+
+        # Returns
+        self.instructions.append(Instruction(0xC9, "RET", [], 8))
+        self.instructions.append(Instruction(0xC0, "RET", [flag_nz], 8))
+        self.instructions.append(Instruction(0xC8, "RET", [flag_z], 8))
+        self.instructions.append(Instruction(0xD0, "RET", [flag_nc], 8))
+        self.instructions.append(Instruction(0xD8, "RET", [flag_c], 8))
+        self.instructions.append(Instruction(0xD9, "RETI", [], 8))
+
+        # Miscellaneous
+        self.instructions.append(Instruction(0x27, "DAA", [], 4, {
+            'z': FlagAction.AFFECTED, 'h': FlagAction.RESET, 'c': FlagAction.AFFECTED
+        }))
+        self.instructions.append(Instruction(0x2F, "CPL", [], 4, {
+            'n': FlagAction.SET, 'h': FlagAction.SET
+        }))
+        self.instructions.append(Instruction(0x3F, "CCF", [], 4, {
+            'n': FlagAction.RESET, 'h': FlagAction.RESET, 'c': FlagAction.AFFECTED
+        }))
+        self.instructions.append(Instruction(0x37, "SCF", [], 4, {
+            'n': FlagAction.RESET, 'h': FlagAction.RESET, 'c': FlagAction.SET
+        }))
+        self.instructions.append(Instruction(0x00, "NOP", [], 4))
+        self.instructions.append(Instruction(0x76, "HALT", [], 4))
+        self.instructions.append(Instruction(0x10, "STOP", [], 4))
+        self.instructions.append(Instruction(0xF3, "DI", [], 4))
+        self.instructions.append(Instruction(0xFB, "EI", [], 4))
+
+        # Rotates & Shifts
+        flags = {
+            'z': FlagAction.AFFECTED, 'n': FlagAction.RESET,
+            'h': FlagAction.RESET, 'c': FlagAction.AFFECTED
+        }
+        self.instructions.append(Instruction(0x07, "RLCA", [], 4, flags))
+        self.instructions.append(Instruction(0x17, "RLA", [], 4, flags))
+        self.instructions.append(Instruction(0x0F, "RRCA", [], 4, flags))
+        self.instructions.append(Instruction(0x1F, "RRA", [], 4, flags))
+
+        # TODO : Prefix CB
+
     def run_load(self, instruction):
         pass
