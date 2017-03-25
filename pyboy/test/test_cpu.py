@@ -17,16 +17,7 @@ class TestCPU(TestCase):
         self.cpu.registers["PC"] = 0x100
 
     def test_exec_load(self):
-        # LD A,0xFF
-        # LD (0xFFFE),A
-        data = [0x3E, 0xFF, 0xEA, 0xFE, 0xFF]
-        self.write_to_mem(data)
-        self.cpu.exec_next()
-        self.assertEqual(self.cpu.registers['A'], 0xFF)
-        self.assertEqual(self.cpu.registers['PC'], 0x102)
-        self.cpu.exec_next()
-        self.assertEqual(self.mem[0xFFFE], 0xFF)
-        self.assertEqual(self.cpu.registers['PC'], 0x105)
+        self._test_load_to_reg()
 
     def test_get_next_byte(self):
         # LD A,0xFF
@@ -41,6 +32,18 @@ class TestCPU(TestCase):
 
     def test_signed(self):
         self.assertEquals(CPU.signed(0xFF), -1)
+
+    def _test_load_to_reg(self):
+        # LD A,0xFF
+        # LD (0xFFFE),A
+        data = [0x3E, 0xFF, 0xEA, 0xFE, 0xFF]
+        self.write_to_mem(data)
+        self.cpu.exec_next()
+        self.assertEqual(self.cpu.registers['A'], 0xFF)
+        self.assertEqual(self.cpu.registers['PC'], 0x102)
+        self.cpu.exec_next()
+        self.assertEqual(self.mem[0xFFFE], 0xFF)
+        self.assertEqual(self.cpu.registers['PC'], 0x105)
 
 if __name__ == "__main__":
     unittest.main()
