@@ -8,7 +8,6 @@ from pyboy.instruction import Instruction, FlagAction
 
 class InstructionTable(object):
     def __init__(self):
-        self._a8 = Arg(ArgType.ADDRESS_8)
         self._a8_deref = Arg(ArgType.ADDRESS_8, dereference=True)
         self._a16 = Arg(ArgType.ADDRESS_16)
         self._a16_deref = Arg(ArgType.ADDRESS_16, dereference=True)
@@ -18,31 +17,19 @@ class InstructionTable(object):
         self._r8 = Arg(ArgType.SIGNED_8)
 
         self._a = Arg(ArgType.REGISTER, register="A")
-        self._f = Arg(ArgType.REGISTER, register="F")
         self._b = Arg(ArgType.REGISTER, register="B")
         self._c = Arg(ArgType.REGISTER, register="C")
         self._d = Arg(ArgType.REGISTER, register="D")
         self._e = Arg(ArgType.REGISTER, register="E")
         self._h = Arg(ArgType.REGISTER, register="H")
         self._l = Arg(ArgType.REGISTER, register="L")
-        self._a_deref = Arg(ArgType.REGISTER, register="A", dereference=True)
-        self._f_deref = Arg(ArgType.REGISTER, register="F", dereference=True)
-        self._b_deref = Arg(ArgType.REGISTER, register="B", dereference=True)
         self._c_deref = Arg(ArgType.REGISTER, register="C", dereference=True)
-        self._d_deref = Arg(ArgType.REGISTER, register="D", dereference=True)
-        self._e_deref = Arg(ArgType.REGISTER, register="E", dereference=True)
-        self._h_deref = Arg(ArgType.REGISTER, register="H", dereference=True)
-        self._l_deref = Arg(ArgType.REGISTER, register="L", dereference=True)
 
         self._af = Arg(ArgType.REGISTER, register="AF")
         self._bc = Arg(ArgType.REGISTER, register="BC")
         self._de = Arg(ArgType.REGISTER, register="DE")
         self._hl = Arg(ArgType.REGISTER, register="HL")
         self._sp = Arg(ArgType.REGISTER, register="SP")
-        self._pc = Arg(ArgType.REGISTER, register="PC")
-        self._hl_dec = Arg(ArgType.REGISTER, register="HL-")
-        self._hl_inc = Arg(ArgType.REGISTER, register="HL+")
-        self._af_deref = Arg(ArgType.REGISTER, register="AF", dereference=True)
         self._bc_deref = Arg(ArgType.REGISTER, register="BC", dereference=True)
         self._de_deref = Arg(ArgType.REGISTER, register="DE", dereference=True)
         self._hl_deref = Arg(ArgType.REGISTER, register="HL", dereference=True)
@@ -153,8 +140,8 @@ class InstructionTable(object):
 
         # Misc Loads
         table[0x7F] = Instruction(0x7F, "LD", [self._a, self._a], 4)
-        table[0xF2] = Instruction(0xF2, "LD", [self._a, self._a8_deref], 8)
-        table[0xE2] = Instruction(0xE2, "LD", [self._a8_deref, self._a], 8)
+        table[0xF2] = Instruction(0xF2, "LD", [self._a, self._c_deref], 8)
+        table[0xE2] = Instruction(0xE2, "LD", [self._c_deref, self._a], 8)
         table[0x3A] = Instruction(0x3A, "LDD", [self._a, self._hl_deref], 8)
         table[0x32] = Instruction(0x32, "LDD", [self._hl_deref, self._a], 8)
         table[0x2A] = Instruction(0x2A, "LDI", [self._a, self._hl_deref], 8)
