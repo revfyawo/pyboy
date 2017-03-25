@@ -1,5 +1,10 @@
 from pyboy.instruction import Instruction
+from pyboy.instruction import ArgumentType as ArgType
 from pyboy.instructiontable import InstructionTable
+
+
+class OpcodeException(BaseException):
+    pass
 
 
 class CPU(object):
@@ -24,6 +29,7 @@ class CPU(object):
         if self.prefixed:
             instruction = self.instructions.tables['PREFIX CB'][opcode]
             asm = instruction.asm
+            self.prefixed = False
         else:
             instruction = self.instructions.tables['default'][opcode]
             asm = instruction.asm
@@ -77,7 +83,54 @@ class CPU(object):
             self.exec_misc(instruction)
 
     def exec_load(self, instruction: Instruction) -> None:
-        pass
+        store_to = instruction.args[0]
+        store_from = instruction.args[1]
+        value = 0
+        asm = instruction.asm
+        opcode = instruction.opcode
+        if asm == "LD":
+            if store_to.arg_type == ArgType.REGISTER:
+                if store_from.arg_type == ArgType.REGISTER:
+                    if store_from.dereference:
+                        value = self.memory[self.registers[store_from.register]]
+                    else:
+                        value = self.registers[store_from.register]
+                elif store_from.arg_type == ArgType.UNSIGNED_8:
+                    value = self.get_next_byte()
+                elif store_from.arg_type == ArgType.UNSIGNED_16:
+                    value = self.get_next_byte()
+                    value += self.get_next_byte() << 8
+                elif store_from.arg_type == ArgType.ADDRESS_16 and store_from.dereference:
+                    address = self.get_next_byte()
+                    address += self.get_next_byte() << 8
+                    value = self.memory[address]
+
+                if store_to.dereference:
+                    if store_to.register == "C":
+                        self.memory[0xFF00 + self.registers["C"]] = value
+                    else:
+                        self.memory[self.registers[store_to.register]] = value
+                else:
+                    self.registers[store_to.register] = value
+            elif store_to.arg_type == ArgType.ADDRESS_16 and store_to.dereference:
+                address = self.get_next_byte() + self.get_next_byte() << 8
+                self.memory[address] = self.registers[store_from.register]
+            else:
+                raise OpcodeException("{} not implemented".format(repr(instruction)))
+        elif asm in ("LDD", "LDI"):
+            if store_to.register == "A":
+                self.registers["A"] = self.memory[self.registers["HL"]]
+            else:
+                self.memory[self.registers["HL"]] = self.registers["A"]
+            self.registers["HL"] += 1 if asm == "LDI" else -1
+        elif opcode == 0xE0:  # LDH (a8),A
+            self.memory[0xFF00 + self.get_next_byte()] = self.registers["A"]
+        elif opcode == 0xF0:  # LDH A,(a8)
+            self.registers["A"] = self.memory[0xFF00 + self.get_next_byte()]
+        elif asm == "LDHL":
+            self.registers["HL"] = self.registers["SP"] + self.signed(self.get_next_byte())
+        else:
+            raise OpcodeException("{} not implemented".format(repr(instruction)))
 
     def exec_push(self, instruction: Instruction) -> None:
         pass
@@ -141,3 +194,14 @@ class CPU(object):
 
     def exec_misc(self, instruction: Instruction) -> None:
         pass
+
+    def get_next_byte(self):
+        value = self.memory[self.registers['PC']]
+        self.registers['PC'] += 1
+        return value
+
+    @staticmethod
+    def signed(byte):
+        if byte > 0x80:
+            return -1 * (0xFF - byte)
+        return byte
