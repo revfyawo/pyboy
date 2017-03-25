@@ -1,3 +1,18 @@
 class Memory(object):
     """" Memory """
-    pass
+    def __init__(self):
+        self.iter_index = -1
+        self.mem = [0 for i in range(0xFFFF)]
+
+    def __iter__(self):
+        self.iter_index = -1
+        return self
+
+    def __next__(self):
+        self.iter_index += 1
+        if self.iter_index >= 0xFFFF:
+            raise StopIteration
+        return self.mem[self.iter_index]
+
+    def __getitem__(self, item):
+        return self.mem[item]
