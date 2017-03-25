@@ -49,7 +49,7 @@ class InstructionTable(object):
 
     def create_default_instruction_table(self) -> None:
         """Initialize the default table"""
-        table = [Instruction(0x00, "NOP", [], 4) for _ in range(0xFF)]
+        table = [Instruction(0x00, "NOP", [], 4) for _ in range(0xFF + 1)]
         flags = dict.fromkeys("z n h c".split(" "), FlagAction.NOT_AFFECTED)
 
         # 8 bits loads
@@ -123,7 +123,7 @@ class InstructionTable(object):
         table[0x0A] = Instruction(0x0A, "LD", [self._a, self._bc_deref], 8)
         table[0x1A] = Instruction(0x1A, "LD", [self._a, self._de_deref], 8)
         table[0x7E] = Instruction(0x7E, "LD", [self._a, self._hl_deref], 8)
-        table[0x7A] = Instruction(0x7A, "LD", [self._a, self._a16_deref], 16)
+        table[0xFA] = Instruction(0xFA, "LD", [self._a, self._a16_deref], 16)
         table[0x3E] = Instruction(0x3E, "LD", [self._a, self._d8], 8)
 
         # Loads from register A
@@ -135,7 +135,7 @@ class InstructionTable(object):
         table[0x6F] = Instruction(0x6F, "LD", [self._l, self._a], 4)
         table[0x02] = Instruction(0x02, "LD", [self._bc_deref, self._a], 8)
         table[0x12] = Instruction(0x12, "LD", [self._de_deref, self._a], 8)
-        table[0x77] = Instruction(0x77, "LD", [self._bc_deref, self._a], 8)
+        table[0x77] = Instruction(0x77, "LD", [self._hl_deref, self._a], 8)
         table[0xEA] = Instruction(0xEA, "LD", [self._a16_deref, self._a], 16)
 
         # Misc Loads
@@ -149,9 +149,9 @@ class InstructionTable(object):
         table[0xE0] = Instruction(0xE0, "LDH", [self._a8_deref, self._a], 12)
         table[0xF0] = Instruction(0xF0, "LDH", [self._a, self._a8_deref], 12)
 
-        # 12 bits loads
+        # 16 bits loads
 
-        # LD REG, D12
+        # LD REG, D16
         table[0x01] = Instruction(0x01, "LD", [self._bc, self._d16], 12)
         table[0x11] = Instruction(0x11, "LD", [self._de, self._d16], 12)
         table[0x21] = Instruction(0x21, "LD", [self._hl, self._d16], 12)
@@ -159,10 +159,10 @@ class InstructionTable(object):
 
         # Misc 16 bits loads
         table[0xF9] = Instruction(0xF9, "LD", [self._sp, self._hl], 8)
-        table.insert(0xF8, Instruction(0xF8, "LDHL", [self._sp, self._d8], 12, {
+        table[0xF8] = Instruction(0xF8, "LDHL", [self._sp, self._d8], 12, {
             'z': FlagAction.RESET, 'n': FlagAction.RESET,
             'h': FlagAction.AFFECTED, 'c': FlagAction.AFFECTED
-        }))
+        })
         table[0x08] = Instruction(0x08, "LD", [self._a16_deref, self._sp], 20)
 
         # Push
