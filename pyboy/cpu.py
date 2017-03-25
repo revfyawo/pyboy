@@ -18,6 +18,7 @@ class CPU(object):
         ]
         self.registers = dict.fromkeys(registers_names)
         self.registers['PC'] = 0x100
+        self.registers['SP'] = 0xFFFE
         self.instructions = InstructionTable()
 
         self.stopped = False
@@ -203,5 +204,5 @@ class CPU(object):
     @staticmethod
     def signed(byte):
         if byte > 0x80:
-            return -1 * (0xFF - byte)
+            return (byte & 0x7F) - 128
         return byte

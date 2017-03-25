@@ -413,7 +413,7 @@ class InstructionTable(object):
 
     def create_prefix_cb_instruction_table(self) -> None:
         """Initialize "PREFIX CB" instruction table"""
-        table = [Instruction(0x00, "NOP", [], 4)]
+        table = [Instruction(0x00, "NOP", [], 4) for _ in range(0xFF + 1)]
 
         # Rotates
         flags = dict(z=FlagAction.AFFECTED, n=FlagAction.RESET, h=FlagAction.RESET, c=FlagAction.AFFECTED)
