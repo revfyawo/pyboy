@@ -2,7 +2,7 @@ class Memory(object):
     """" Memory """
     def __init__(self):
         self.iter_index = -1
-        self.mem = [0 for i in range(0xFFFF)]
+        self.mem = [0 for i in range(0xFFFF + 1)]
 
     def __iter__(self):
         self.iter_index = -1
@@ -16,3 +16,7 @@ class Memory(object):
 
     def __getitem__(self, item):
         return self.mem[item]
+
+    def __setitem__(self, key, value):
+        self.mem[key] = value
+        return value
