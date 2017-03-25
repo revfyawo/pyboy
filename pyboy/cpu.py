@@ -16,7 +16,7 @@ class CPU(object):
             'A', 'F', 'B', 'C', 'D', 'E', 'H', 'L',
             'AF', 'BC', 'DE', 'HL', 'SP', 'PC'
         ]
-        self.registers = dict.fromkeys(registers_names)
+        self.registers = dict.fromkeys(registers_names, 0)
         self.registers['PC'] = 0x100
         self.registers['SP'] = 0xFFFE
         self.instructions = InstructionTable()
@@ -25,6 +25,9 @@ class CPU(object):
         self.halted = False
         self.interrupts_enabled = True
         self.prefixed = False
+
+    def exec_next(self):
+        self.exec(self.get_next_byte())
 
     def exec(self, opcode: int) -> None:
         if self.prefixed:
@@ -114,7 +117,7 @@ class CPU(object):
                 else:
                     self.registers[store_to.register] = value
             elif store_to.arg_type == ArgType.ADDRESS_16 and store_to.dereference:
-                address = self.get_next_byte() + self.get_next_byte() << 8
+                address = self.get_next_byte() + (self.get_next_byte() << 8)
                 self.memory[address] = self.registers[store_from.register]
             else:
                 raise OpcodeException("{} not implemented".format(repr(instruction)))
