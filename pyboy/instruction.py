@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict
 from typing import List
 
 
@@ -24,19 +25,48 @@ class ArgumentType(Enum):
 class Argument(object):
     """An argument : an argument type and a bool"""
 
-    def __init__(self, arg_type, dereference=False, flag="", register=''):
-        self.flag = flag
-        self.register = register
-        self.dereference = dereference
-        self.arg_type = arg_type
+    def __init__(self, arg_type, dereference=False, flag="", register=""):
+        self.flag = flag  # type: str
+        self.register = register  # type: str
+        self.dereference = dereference  # type: bool
+        self.arg_type = arg_type  # type: ArgumentType
+
+    def __repr__(self):
+        string = ""
+        if self.dereference:
+            string += "("
+        if self.arg_type == ArgumentType.REGISTER:
+            string += self.register
+        elif self.arg_type in (ArgumentType.FLAG_NOT_SET, ArgumentType.FLAG_SET):
+            if self.arg_type == ArgumentType.FLAG_NOT_SET:
+                string += "n"
+            string += self.flag
+        else:
+            string += self.arg_type.name
+        if self.dereference:
+            string += ")"
+        return string
 
 
 class Instruction(object):
     """An opcode"""
 
-    def __init__(self, opcode, asm, args, cycles, flags={}):
-        self.flags = flags
-        self.cycles = cycles
+    def __init__(self, opcode, asm, args, cycles, flags=None):
+        self.flags = flags  # type: Dict[str, FlagAction]
+        self.cycles = cycles  # type: int
         self.asm = asm  # type: str
         self.opcode = opcode  # type: int
         self.args = args  # type: List[Argument]
+
+    def __index__(self):
+        return self.opcode
+
+    def __repr__(self):
+        string = self.__hex() + ": " + self.asm + " "
+        for arg in self.args:
+            string += repr(arg) + ","
+        string = string[:-1]
+        return string
+
+    def __hex(self):
+        return "{:0=2X}".format(self.opcode)
