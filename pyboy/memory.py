@@ -10,7 +10,7 @@ class Memory(object):
 
     def __next__(self):
         self.iter_index += 1
-        if self.iter_index >= 0xFFFF:
+        if self.iter_index > 0xFFFF:
             raise StopIteration
         return self.mem[self.iter_index]
 
