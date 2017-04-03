@@ -32,11 +32,10 @@ class CPU(object):
     def exec(self, opcode: int) -> None:
         if self.prefixed:
             instruction = self.instructions.tables['PREFIX CB'][opcode]
-            asm = instruction.asm
             self.prefixed = False
         else:
             instruction = self.instructions.tables['default'][opcode]
-            asm = instruction.asm
+        asm = instruction.asm
 
         if asm == "CB":
             self.prefixed = True
