@@ -12,21 +12,23 @@ class Cartridge(object):
         """
         self.rom0 = [0 for _ in range(0x7FFF + 1)]
 
-    def load_game_rom(rom_file_path):
+    def load_game_rom(self, rom_file_path):
         with open(rom_file_path, 'rb') as rom:
             pass
-            #todo: read byte by byte
+            # todo: read byte by byte
             
 
 class MBC(object):
     """ Memory Bank Controller - Handles the extra ROM and/or RAM present in the cartridge """
     pass
 
+
 class Memory(object):
     """" Memory """
-    def __init__(self):
+    def __init__(self, cart=None):
         self.iter_index = -1
         self.mem = [0 for _ in range(0xFFFF + 1)]
+        self.cart = cart
 
     def __iter__(self):
         self.iter_index = -1
@@ -60,6 +62,7 @@ class Memory(object):
         else:
             self.mem[key] = value
         return value
+
 
 class CartridgeMissing(Exception):
     """
