@@ -8,6 +8,7 @@ class Cartridge(object):
     They can be just another 16kB of ROM space (as in Tetris), or a dynamic load of further ROM banks (or even
     RAM) located inside the cartridge. 
     """
+
     def __init__(self):
         """
         This is minimalistic for testing/debugging purposes. The Cartridge object
@@ -20,7 +21,7 @@ class Cartridge(object):
         self.romx = [0 for _ in range(0x3FFF + 1)]
         self.mbc = None
 
-    def load_game_rom(self, rom_file_path):
+    def load_game_rom(self, rom_file_path: str):
         """ Load a game binary from file, and store it in the appropriate layout. """
         self.mbc = MBC.infer_from_rom(rom_file_path)
 
