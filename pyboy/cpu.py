@@ -91,6 +91,7 @@ class CPU(object):
         value = 0
         asm = instruction.asm
         opcode = instruction.opcode
+        # differentiate between the different load instructions
         if asm == "LD":
             if store_to.arg_type == ArgType.REGISTER:
                 if store_from.arg_type == ArgType.REGISTER:
@@ -130,7 +131,7 @@ class CPU(object):
             self.memory[0xFF00 + self.get_next_byte()] = self.registers["A"]
         elif opcode == 0xF0:  # LDH A,(a8)
             self.registers["A"] = self.memory[0xFF00 + self.get_next_byte()]
-        elif asm == "LDHL":
+        elif asm == "LDHL": # LD HL, SP+n
             self.registers["HL"] = self.registers["SP"] + self.signed(self.get_next_byte())
         else:
             raise OpcodeException("{} not implemented".format(repr(instruction)))
