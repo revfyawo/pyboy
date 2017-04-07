@@ -214,11 +214,11 @@ class CPU(object):
         """ decorator function that translates/looks up/dereferences Instruction.Arguments 
         to their values (so "converts" them to ints), calls the decorated instruction on said values,
         and stores the result in the first Argument's location """
-        def decorator(f):
+        def wrapped(f):
             values = self.extract_values(args)
             result = f(values)
             self.store_value(args[0], result)
-        return decorator
+        return wrapped
 
     def extract_values(self, *args):
         """Converts/extracts/dereferences/etc arguments to the "raw" values they represent.
