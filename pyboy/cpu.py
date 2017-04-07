@@ -29,6 +29,43 @@ class CPU(object):
     def exec_next(self):
         self.exec(self.get_next_byte())
 
+    def cpu_instruction(self, *args):
+        """ decorator function that translates/looks up/dereferences Instruction.Arguments 
+        to their values (so "converts" them to ints), calls the decorated instruction on said values,
+        and stores the result in the first Argument's location """
+        values = [None for _ in args]
+        for i, arg in enumerate(args):
+            with arg.arg_type as t:
+                if t == ArgType.SIGNED_8:
+                    values[i] = self.signed(self.get_next_byte())
+
+                elif t == ArgType.UNSIGNED_8:
+                    values[i] = self.get_next_byte()
+
+                elif t == ArgType.UNSIGNED_16:  # LSB first
+                    values[i] = self.get_next_byte() + (self.get_next_byte() << 8)
+
+                elif t == ArgType.REGISTER:
+                    if arg.dereference:
+                        values[i] = self.memory[self.registers[arg.register]]
+                    else:
+                        values[i] = self.registers[arg.register]
+
+                elif t == ArgType.ADDRESS_16 and arg.dereference:
+                    address = self.get_next_byte() + self.get_next_byte() << 8
+                    values[i] = self.memory[address]
+
+                elif t == ArgType.ADDRESS_8 and arg.dereference:
+                    address = self.get_next_byte() + 0xff00
+                    values[i] = self.memory[address]
+
+                else:
+                    raise NotImplemented(t, 'Argument Type not handled in decorator cpu_instruction')
+
+        def decorator(f):
+            return f(values)
+        return decorator
+
     def exec(self, opcode: int) -> None:
         if self.prefixed:
             instruction = self.instructions.tables['PREFIX CB'][opcode]
@@ -131,7 +168,7 @@ class CPU(object):
             self.memory[0xFF00 + self.get_next_byte()] = self.registers["A"]
         elif opcode == 0xF0:  # LDH A,(a8)
             self.registers["A"] = self.memory[0xFF00 + self.get_next_byte()]
-        elif asm == "LDHL": # LD HL, SP+n
+        elif asm == "LDHL":  # LD HL, SP+n
             self.registers["HL"] = self.registers["SP"] + self.signed(self.get_next_byte())
         else:
             raise OpcodeException("{} not implemented".format(repr(instruction)))
