@@ -6,9 +6,9 @@ from pyboy.memory import Memory
 class GameBoy(object):
     """" GameBoy """
     def __init__(self):
-        self.cpu = CPU()
-        self.gpu = GPU()
         self.memory = Memory()
+        self.cpu = CPU(self.memory)
+        self.gpu = GPU()
 
     def load_rom(self, rom):
         pass
