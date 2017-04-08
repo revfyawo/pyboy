@@ -1,5 +1,4 @@
-from pyboy.instruction import Instruction
-from pyboy.instruction import ArgumentType as ArgType
+from pyboy.instruction import ArgumentType as ArgType, Instruction
 from pyboy.instructiontable import InstructionTable
 
 
@@ -131,7 +130,7 @@ class CPU(object):
             self.memory[0xFF00 + self.get_next_byte()] = self.registers["A"]
         elif opcode == 0xF0:  # LDH A,(a8)
             self.registers["A"] = self.memory[0xFF00 + self.get_next_byte()]
-        elif asm == "LDHL": # LD HL, SP+n
+        elif asm == "LDHL":  # LD HL, SP+n
             self.registers["HL"] = self.registers["SP"] + self.signed(self.get_next_byte())
         else:
             raise OpcodeException("{} not implemented".format(repr(instruction)))
