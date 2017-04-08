@@ -4,6 +4,9 @@ class Memory(object):
         self.iter_index = -1
         self.mem = [0 for _ in range(0xFFFF + 1)]
 
+    def __len__(self):
+        return len(self.mem)
+
     def __iter__(self):
         self.iter_index = -1
         return self
