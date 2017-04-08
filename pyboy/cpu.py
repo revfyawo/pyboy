@@ -1,5 +1,4 @@
-from pyboy.instruction import Instruction, Argument
-from pyboy.instruction import ArgumentType as ArgType
+from pyboy.instruction import Argument, ArgumentType as ArgType, Instruction
 from pyboy.instructiontable import InstructionTable
 
 
@@ -214,11 +213,13 @@ class CPU(object):
         """ decorator function that translates/looks up/dereferences Instruction.Arguments 
         to their values (so "converts" them to ints), calls the decorated instruction on said values,
         and stores the result in the first Argument's location """
-        def wrapped(f):
-            values = self.extract_values(args)
-            result = f(values)
-            self.store_value(args[0], result)
-        return wrapped
+        def decorator(f):
+            def wrapped():
+                values = self.extract_values(args)
+                result = f(values)
+                self.store_value(args[0], result)
+            return wrapped
+        return decorator
 
     def extract_values(self, *args):
         """Converts/extracts/dereferences/etc arguments to the "raw" values they represent.
@@ -250,8 +251,24 @@ class CPU(object):
                     values[i] = self.memory[address]
 
                 else:
-                    raise NotImplemented(t, 'Argument Type not handled in decorator cpu_instruction')
+                    raise NotImplemented('Argument Type {} not handled in cpu.extract_values'.format(t))
         return values
 
     def store_value(self, location: Argument, value):
-        pass
+        with location.arg_type as t:
+            if t == ArgType.REGISTER:
+                if location.dereference:
+                    self.memory[self.registers[location.register]] = value
+                else:
+                    self.registers[location.register] = value
+
+            elif t == ArgType.ADDRESS_16 and location.dereference:
+                address = self.get_next_byte() + self.get_next_byte() << 8
+                self.memory[address] = value
+
+            elif t == ArgType.ADDRESS_8 and location.dereference:
+                address = self.get_next_byte() + 0xff00
+                self.memory[address] = value
+
+            else:
+                raise NotImplemented('Argument Type {} not handled in cpu.store_value'.format(t))
