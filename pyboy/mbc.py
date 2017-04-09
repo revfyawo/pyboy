@@ -41,7 +41,8 @@ class MBC1(object):
         elif 0x4000 <= address < 0x8000:
             return self.rom[self.romi][address % 0x3fff]  # each ROM bank is addressed from 0x0000 to 0x3fff
         elif 0xa000 <= address < 0xc0000:
-            return self.ram[self.rami if (self.mode == 'ram banking') else 0][address % 0x3fff]
+            if self.ram_enabled:
+                return self.ram[self.rami if (self.mode == 'ram banking') else 0][address % 0x3fff]
         else:
             raise IndexError("MBC received invalid address : {}".format(str(address)))
 
@@ -100,7 +101,8 @@ class MBC2(object):
         elif 0xa000 <= address < 0xa200:
             # only the last 4 bits are transmitted, the rest are
             # supposed to be ignored by the game's programmer
-            return 0xf0 | self.ram[self.rami][address % 0x3fff]
+            if self.ram_enabled:
+                return 0xf0 | self.ram[self.rami][address % 0x3fff]
         else:
             raise IndexError("MBC received invalid address : {}".format(str(address)))
 
@@ -119,4 +121,5 @@ class MBC2(object):
                     self.romi = 1
         elif 0xa000 <= address < 0xa200:
             # only the last 4 bits are received
-            self.ram[self.rami] = 0xf & value
+            if self.ram_enabled:
+                self.ram[self.rami] = 0xf & value
