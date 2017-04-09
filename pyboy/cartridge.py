@@ -1,4 +1,4 @@
-from pyboy.mbc import MBC
+from pyboy.mbc import infer_mbc_from_rom
 
 
 class Cartridge(object):
@@ -23,7 +23,7 @@ class Cartridge(object):
 
     def load_game_rom(self, rom_file_path: str):
         """ Load a game binary from file, and store it in the appropriate layout. """
-        self.mbc = MBC.infer_from_rom(rom_file_path)
+        self.mbc = infer_mbc_from_rom(rom_file_path)
 
         with open(rom_file_path, 'rb') as rom:
             count = 0
