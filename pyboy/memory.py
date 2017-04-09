@@ -1,9 +1,12 @@
-class Memory(object):
+from collections import Sequence
+
+
+class Memory(Sequence):
     """" Memory """
-    def __init__(self, cart=None):
+    def __init__(self, mbc=None):
         self.iter_index = -1
         self.mem = [0 for _ in range(0xFFFF + 1)]
-        self.cart = cart
+        self.mbc = mbc
 
     def __len__(self):
         return len(self.mem)
@@ -22,11 +25,11 @@ class Memory(object):
         if key < 0 or key > 0xFFFF:
             raise IndexError("Memory access out of bounds, address {} is invalid.".format(key))
         elif key < 0x8000 or (0xa000 <= key < 0xc000):
-            if self.cart is None:
+            if self.mbc is None:
                 # according to docs, return 0xff
-                raise CartridgeMissing
+                raise MBCMissing
             else:
-                return self.cart[key]
+                return self.mbc[key]
         else:
             return self.mem[key]
 
@@ -34,18 +37,18 @@ class Memory(object):
         if key < 0 or key > 0xFFFF:
             raise IndexError("Memory access out of bounds, address {} is invalid.".format(key))
         elif key < 0x8000 or (0xa000 <= key < 0xc000):
-            if self.cart is None:
+            if self.mbc is None:
                 # according to docs, return 0xff
-                raise CartridgeMissing
+                raise MBCMissing
             else:
-                self.cart[key] = value
+                self.mbc[key] = value
         else:
             self.mem[key] = value
         # return value
 
 
-class CartridgeMissing(Exception):
+class MBCMissing(Exception):
     """
-    As the name suggests, raised when trying to access the first
-    32kB of address space when the cartridge is not present/loaded
+    As the name suggests, raised when trying to access
+    the mbc address space when it is not present/loaded
     """
