@@ -1,7 +1,4 @@
-from collections import Sequence
-
-
-class Memory(Sequence):
+class Memory(object):
     """" Memory """
     def __init__(self, mbc=None):
         self.iter_index = -1
